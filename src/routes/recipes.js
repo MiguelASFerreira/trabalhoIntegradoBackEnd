@@ -26,23 +26,20 @@ router.get("/recipes/:id", async (req, res) => {
     })
 })
 
-router.post("/owner/recipes", auth, async (req, res) => {
-    const user = req.user
-    const recipeOwner = req.body.recipes;
-    for (const item of recipeOwner) {
-        await ownerRecipes(user.userId, item.recipeId)
+router.post("/recipes", auth, async (req, res) => {
+    try {
+        const user = req.user
+        const recipe = RecipeSchema.parse(req.body)
+        const create = await createRecipe(recipe, user.userId)
+        res.status(201).json({
+            Recipe: create
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message: "Erro ao criar a receita",
+            error: error.message
+        });
     }
-    res.status(201).json({
-        success: true,
-    })
-})
-
-router.post("/recipes", async (req, res) => {
-    const recipe = RecipeSchema.parse(req.body)
-    const create = await createRecipe(recipe)
-    res.status(201).json({
-        Recipe: create
-    })
 })
 
 router.put("/recipes/:id", auth, async (req, res) => {

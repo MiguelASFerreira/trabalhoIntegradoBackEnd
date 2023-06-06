@@ -12,28 +12,27 @@ const getIdRecipe = (id) => {
     })
 }
 
-const createRecipe = (data) => {
+const createRecipe = (recipeData, userId) => {
+  const { nome, descricao, tempo } = recipeData;
     return prisma.recipe.create({
-        data: data
-    })
-}
-
-const ownerRecipes = (userId, recipeId) => {
-    return prisma.book.create({
-        data: {
-            recipe: {
-                connect: {
-                    id: recipeId
-                }
+      data: {
+        nome,
+        descricao,
+        tempo,
+        BookBy: {
+          create: {
+            user: { 
+              connect: { 
+                id: userId ,
+              } 
             },
-            user: {
-                connect: {
-                    id: userId
-                }
-            }
+          },
         },
-
-    })
+      },
+      include: {
+        BookBy: false,
+      },
+    });
 }
 
 const updateRecipe = (id, data) => {
@@ -85,7 +84,6 @@ module.exports = {
     getAllRecipes,
     getIdRecipe,
     createRecipe,
-    ownerRecipes,
     updateRecipe,
     deleteRecipes,
     verifyRecipeOwnership
