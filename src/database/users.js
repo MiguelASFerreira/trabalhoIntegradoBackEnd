@@ -6,13 +6,14 @@ const getAllUser = () => {
             id: true,
             nome: true,
             email: true,
-            password: true,
+            password: false,
             BookMany: {
                 select: {
                     recipe: {
                         select: {
                             nome: true,
                             descricao: true,
+                            tempo: true
                         }
                     }
                 }
@@ -66,7 +67,7 @@ const createUser = (data) => {
 const updateUser = (id, data) => {
     const updateId = prisma.user.update({
         where: {
-            id: id,
+            id,
         },
         data: data
     })
@@ -74,13 +75,31 @@ const updateUser = (id, data) => {
 }
 
 const deleteUser = async (id) => {
+    const bookCount = await prisma.book.count({
+        where: {
+            userId: id
+        }
+    })
+
+    if (bookCount > 0) {
+        throw new Error("Não é possível excluir o usuário. Pois há registros.");
+    }
+
     await prisma.user.delete({
         where: {
             id: id,
-        },
+        }
     })
 
     await prisma.user.deleteMany({
+        where: {
+            id: id
+        }
+    })
+}
+
+const verirfyUser = (id) => {
+    return prisma.user.findFirst({
         where: {
             id: id
         }
@@ -96,4 +115,5 @@ module.exports = {
     createUser,
     updateUser,
     deleteUser,
+    verirfyUser
 }

@@ -29,6 +29,7 @@ router.get("/recipes/:id", async (req, res) => {
 router.post("/recipes", auth, async (req, res) => {
     try {
         const user = req.user
+        if (!user) return res.status(401).send()
         const recipe = RecipeSchema.parse(req.body)
         const create = await createRecipe(recipe, user.userId)
         res.status(201).json({

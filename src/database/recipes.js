@@ -1,7 +1,14 @@
 const prisma = require('./prisma')
 
 const getAllRecipes = () => {
-    return prisma.recipe.findMany();
+    return prisma.recipe.findMany({
+      select: {
+        id: true,
+        nome: true,
+        descricao: true,
+        tempo: true,
+      }
+    });
 }
 
 const getIdRecipe = (id) => {
